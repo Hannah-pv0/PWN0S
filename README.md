@@ -1,10 +1,12 @@
 ## What's New
 
-### v0.1.1
+### v0.1.2
 
-- Rabids payload builder is now Go-based for Windows payloads: generates, encrypts, and compiles a silent EXE with persistence and AV evasion. New command: `daemon -rb -spider -lh <ip> -lp <port> -k <key>` (or `d -rb -spider ...`).
+- **New Metasploit-style Interface**: PWN0S now uses a module-based command structure similar to Metasploit Framework. Use `use <module>`, `set <option> <value>`, and `run` commands for all operations.
 
-- Added `icepick` quickhack command: EXE binder for red team/offsec use. Now supports arguments: `-target <target exe path> -p <payload exe path>`.
+- **Rabids payload builder** is now Go-based for Windows payloads: generates, encrypts, and compiles a silent EXE with persistence and AV evasion. Access via: `use daemon/rabid/spider` then set `LHOST`, `LPORT`, and `KEY` options.
+
+- **Icepick EXE binder** for red team/offsec use: `use quickhack/icepick` then set `T` (target EXE path) and `P` (payload EXE path) options.
 
 ## Overview
 
