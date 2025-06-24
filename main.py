@@ -176,8 +176,8 @@ def run_shortcirc(opts):
     ])
 
 def run_icepick(opts):
-    t = opts.get('T')
-    p = opts.get('P')
+    t = opts.get('TARGET')
+    p = opts.get('PAYLOAD')
     if not (t and p):
         print("[!] Set T and P before running.")
         return
