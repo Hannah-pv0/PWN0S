@@ -31,7 +31,7 @@ def get_pip_install_args(packages):
     else:
         return ['install'] + packages
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 RED = "\033[38;2;204;103;102m"
@@ -564,6 +564,22 @@ def run_command(cmdline):
                     subprocess.run([sys.executable, script_path] + parts[2:])
                 except FileNotFoundError:
                     print(f"{RED}[!] ping script not found{RESET}")
+                return False
+            if tool == "icepick":
+                with loading_state(message="Launching icepick...", duration=2, print_ascii_art=print_ascii_art):
+                    pass
+                requirements = ["argparse", "colorama"]
+                print(f"{YELLOW}[*] Installing requirements for icepick...{RESET}")
+                try:
+                    subprocess.run([sys.executable, "-m", "pip"] + get_pip_install_args(requirements), check=True)
+                except subprocess.CalledProcessError:
+                    print(f"{RED}[!] Failed to install requirements{RESET}")
+                    return False
+                script_path = os.path.join(PROJECT_ROOT, "QUICKHACKS", "icepick", "icepick.py")
+                try:
+                    subprocess.run([sys.executable, script_path] + parts[2:])
+                except FileNotFoundError:
+                    print(f"{RED}[!] icepick script not found{RESET}")
                 return False
         with loading_state(message=f"Launching {tool}...", duration=2, print_ascii_art=print_ascii_art):
             pass
