@@ -8,7 +8,10 @@
   - **FILESIZE**: The displayed file size
   - **PAYLOAD_FILE**: Path to the file to serve as the payload (auto base64-encoded)
   - **PAYLOAD_NAME**: The name of the payload file for download (overrides FILENAME for the payload only)
-- **Metasploit-style Option Support**: All new drive template options are available in the interactive interface via `set` and `show options`.
+```
+pwn0s > use daemon/brainwipe
+pwn0s > set TEMPLATE drive
+```
 
 ### v0.1.2
 
