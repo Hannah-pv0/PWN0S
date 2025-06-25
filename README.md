@@ -108,7 +108,7 @@ pwn0s > run
 
 ### Detailed Documentation
 
-For comprehensive command reference, detailed module descriptions, usage examples, and troubleshooting guides, see the **[PWN0S Wiki](WIKI.md)**.
+For comprehensive command reference, detailed module descriptions, usage examples, and troubleshooting guides, see the **[PWN0S Wiki](https://github.com/sarwaaaar/PWN0S/wiki)**.
 
 The wiki includes:
 - Complete command syntax and examples
