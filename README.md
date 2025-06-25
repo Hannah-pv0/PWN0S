@@ -1,5 +1,15 @@
 ## What's New
 
+### v0.1.3
+
+- **Google Drive Phishing Template**: The Brainwipe module now includes a highly customizable Google Drive phishing template. You can set:
+  - **FOLDERNAME**: The folder name displayed in the fake drive
+  - **FILENAME**: The file name shown for download
+  - **FILESIZE**: The displayed file size
+  - **PAYLOAD_FILE**: Path to the file to serve as the payload (auto base64-encoded)
+  - **PAYLOAD_NAME**: The name of the payload file for download (overrides FILENAME for the payload only)
+- **Metasploit-style Option Support**: All new drive template options are available in the interactive interface via `set` and `show options`.
+
 ### v0.1.2
 
 - **New Metasploit-style Interface**: PWN0S now uses a module-based command structure similar to Metasploit Framework. Use `use <module>`, `set <option> <value>`, and `run` commands for all operations.
